@@ -6,12 +6,16 @@ import std.conv;
 import std.datetime;
 import derelict.opengl3.gl3;
 import derelict.glfw3.glfw3;
+import derelict.devil.il;
+import derelict.devil.ilu;
 
 public import ZetaOne.Game.game;
 public import ZetaOne.Game.gameSettings;
 public import ZetaOne.Game.frameCounter;
 public import ZetaOne.Graphics.shader;
 public import ZetaOne.Graphics.program;
+public import ZetaOne.Graphics.texture;
+public import ZetaOne.Graphics.image;
 
 class Engine 
 {
@@ -39,6 +43,8 @@ public:
 
 		DerelictGL3.load();
 		DerelictGLFW3.load();
+		DerelictIL.load();
+		DerelictILU.load();
 
 		if (!glfwInit()) {
 			Log("Failed to initialize GLFW.");
@@ -82,6 +88,16 @@ public:
 		{
 			Engine.Log("OpenGL: " ~ msg);
 			throw new Exception("OpenGL: " ~ msg);
+		}
+	}
+
+	/// Throws an exception of there is an DevIL error.
+	static void ILCheck(string msg)
+	{
+		if (ilGetError() != IL_NO_ERROR)
+		{
+			Engine.Log("DevIL: " ~ msg);
+			throw new Exception("DevIL: " ~ msg);
 		}
 	}
 private:

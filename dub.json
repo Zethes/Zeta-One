@@ -9,6 +9,7 @@
 	"dependencies": {
 		"m3d": { "version": "~master" },
 		"derelict-gl3": { "version": "~master" },
-		"derelict-glfw3": { "version": "~master" }
+		"derelict-glfw3": { "version": "~master" },
+		"derelict-il": { "version": "~master" }
 	}
 }

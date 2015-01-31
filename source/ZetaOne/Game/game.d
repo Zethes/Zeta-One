@@ -4,6 +4,8 @@ import core.thread;
 import std.string;
 import derelict.opengl3.gl3;
 import derelict.glfw3.glfw3;
+import derelict.devil.il;
+import derelict.devil.ilu;
 
 class Game : Thread
 {
