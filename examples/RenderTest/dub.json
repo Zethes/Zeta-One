@@ -1,0 +1,9 @@
+{
+	"name": "rendertest",
+	"description": "Tests ZetaOne's renderer.",
+	"copyright": "Copyright © 2015, Amber Thrall",
+	"authors": ["Amber Thrall"],
+	"dependencies": {
+		"zeta-one": { "version": "~master", "path": "../.." }
+	}
+}

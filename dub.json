@@ -1,0 +1,14 @@
+{
+	"name": "zeta-one",
+	"description": "3D game engine.",
+	"copyright": "Copyright © 2015, Amber Thrall",
+	"authors": ["Amber Thrall"],
+	"license": "LGPL-2.1",
+	"targetName": "ZetaOne",
+	"targetType": "library",
+	"dependencies": {
+		"m3d": { "version": "~master" },
+		"derelict-gl3": { "version": "~master" },
+		"derelict-glfw3": { "version": "~master" }
+	}
+}
