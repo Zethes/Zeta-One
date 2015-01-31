@@ -9,6 +9,9 @@ import derelict.glfw3.glfw3;
 
 public import ZetaOne.Game.game;
 public import ZetaOne.Game.gameSettings;
+public import ZetaOne.Game.frameCounter;
+public import ZetaOne.Graphics.shader;
+public import ZetaOne.Graphics.program;
 
 class Engine 
 {
@@ -54,19 +57,31 @@ public:
 	static void Log(T...)(T params)
 	{
 		try {
+			auto date = Clock.currTime;
+			string timestamp = format("%d-%d-%d %d:%d:%d", date.year, date.month, date.day, date.hour, date.minute, date.second);
+			append(logFile, timestamp ~ ": ");
+			write(timestamp ~ ": ");
+
 			foreach (param; params)
 			{
-				auto date = Clock.currTime;
-				string timestamp = format("%d-%d-%d %d:%d:%d", date.year, date.month, date.day, date.hour, date.minute, date.second);
-				append(logFile, timestamp ~ ": ");
 				append(logFile, to!string(param));
-				write(timestamp, ": ", param);
+				write(param);
 			}
 			writeln();
 			append(logFile, "\n");
 		}
 		catch (Exception e) {
 			writeln("Caught Exception: ", e);
+		}
+	}
+	
+	/// Throws an exception of there is an OpenGL error.
+	static void GLCheck(string msg)
+	{
+		if (glGetError() != GL_NO_ERROR)
+		{
+			Engine.Log("OpenGL: " ~ msg);
+			throw new Exception("OpenGL: " ~ msg);
 		}
 	}
 private:

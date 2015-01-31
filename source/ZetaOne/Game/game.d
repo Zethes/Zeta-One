@@ -13,12 +13,19 @@ public:
 		if (gameSettings is null)
 		{
 			const GLFWvidmode * vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-			this.settings = new GameSettings(vidmode.width, vidmode.height, true, "ZetaOne", 0);
+			this.settings = new GameSettings(vidmode.width, vidmode.height, true, "ZetaOne");
 		}
 		else
 			this.settings = gameSettings;
 		super(&Run);
 	}
+
+	void Close()
+	{
+		gameRunning = false;
+	}
+
+	@property FrameCounter FrameRate() { return frameCounter; }
 protected:
 	protected void Initialize()
 	{
@@ -32,13 +39,14 @@ protected:
 	
 	protected void Update()
 	{
-
+		Engine.Log("FPS: ", FrameRate.FPS, " frames per second, ", FrameRate.FrameTime.msecs, " ms");
 	}
 
 	protected void Render()
 	{
-
+		
 	}
+
 private:
 	void Run()
 	{
@@ -65,16 +73,29 @@ private:
 
 		glfwMakeContextCurrent(window);
 		DerelictGL3.reload();
+		glfwSwapInterval(settings.VSync ? 1 : 0);
 
+		gameRunning = true;
+
+		Initialize();
+		frameCounter = new FrameCounter();
 		Engine.Log("Entering main game loop.");
-		while (!glfwWindowShouldClose(window))
+		while (!glfwWindowShouldClose(window) && gameRunning)
 		{
 			glfwPollEvents();
 
+			Update();
+			Render();
+
+			frameCounter.AddFrame();
 			glfwSwapBuffers(window);
 		}
+
+		Deinitialize();
 	}
 
 	GameSettings settings;
 	GLFWwindow* window;
+	bool gameRunning;
+	FrameCounter frameCounter;
 }
