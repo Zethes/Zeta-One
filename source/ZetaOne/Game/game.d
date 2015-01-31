@@ -28,28 +28,34 @@ public:
 	}
 
 	@property FrameCounter FrameRate() { return frameCounter; }
+	@property GraphicsManager Graphics() { return graphicsManager; }
 protected:
-	protected void Initialize()
-	{
+	Texture watch;
 
+	void Initialize()
+	{
+		Image img = new Image("watch.png");
+		watch = new Texture(img);
 	}
 
-	protected void Deinitialize()
+	void Deinitialize()
 	{
 
 	}
 	
-	protected void Update()
+	void Update()
 	{
-		Engine.Log("FPS: ", FrameRate.FPS, " frames per second, ", FrameRate.FrameTime.msecs, " ms");
-	}
 
-	protected void Render()
-	{
-		
 	}
-
 private:
+	void Render()
+	{
+		// Render the final framebuffer to the screen.
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
+		Graphics.GetRenderer2D.RenderTexture(Transformf.Identity, watch);
+	}
+
 	void Run()
 	{
 		Engine.Log("Creating Engine Modules");
@@ -77,8 +83,11 @@ private:
 		DerelictGL3.reload();
 		glfwSwapInterval(settings.VSync ? 1 : 0);
 
-		gameRunning = true;
+		// Initialize the graphics manager after setting the context.
+		graphicsManager = new GraphicsManager(settings);
 
+		// Enter the main game loop. Running until window is closed or gameRunning is set to false. 
+		gameRunning = true;
 		Initialize();
 		frameCounter = new FrameCounter();
 		Engine.Log("Entering main game loop.");
@@ -100,4 +109,5 @@ private:
 	GLFWwindow* window;
 	bool gameRunning;
 	FrameCounter frameCounter;
+	GraphicsManager graphicsManager;
 }

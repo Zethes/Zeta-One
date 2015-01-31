@@ -13,14 +13,19 @@ public:
 		glGenTextures(1, &texture);
 		Engine.GLCheck("Failed to generate texture.");
 		this.type = type;
+
+		SetTextureWrapS(GL_CLAMP_TO_EDGE);
+		SetTextureWrapT(GL_CLAMP_TO_EDGE);
+		SetMinFilter(GL_LINEAR);
+		SetMagFilter(GL_LINEAR);
 	}
 
 	this(Image image)
 	{
 		this(GL_TEXTURE_2D);
 		image.Bind();
-		glTexImage2D(texture, 0, image.BPP, image.Width, image.Height, 0, image.Format, GL_UNSIGNED_BYTE, cast(GLvoid*)image.Data);
-		Engine.GLCheck("Failed to generate texture.");
+		glTexImage2D(GL_TEXTURE_2D, 0, image.BPP, image.Width, image.Height, 0, image.Format, image.Type, cast(GLvoid*)image.Data);
+		Engine.GLCheck("Failed to set texture.");
 		image.Unbind();
 	}
 
@@ -80,6 +85,17 @@ public:
 	void Parameterf(GLenum param, float value)
 	{
 		glTexParameterf(type, param, value);
+	}
+
+	void Active(GLenum param)
+	{
+		glActiveTexture(param);
+		Engine.GLCheck("Failed to change active texture.");
+	}
+
+	void PixelStorei(GLenum param, GLint value)
+	{
+		glPixelStorei(param, value);
 	}
 
 	@property GLuint ID() { return texture; }

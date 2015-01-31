@@ -4,6 +4,58 @@ import m3d.m3d;
 import std.string;
 import ZetaOne.d;
 
+enum ProgramLocations
+{
+	POSITION0,
+	POSITION1,
+	POSITION2,
+	POSITION3,
+	POSITION4,
+
+	NORMAL0,
+	NORMAL1,
+	NORMAL2,
+	NORMAL3,
+	NORMAL4,
+
+	TEXCOORD0,
+	TEXCOORD1,
+	TEXCOORD2,
+	TEXCOORD3,
+	TEXCOORD4,
+
+	MATRIX0,
+	MATRIX1,
+	MATRIX2,
+	MATRIX3,
+	MATRIX4,
+
+	COLOR0,
+	COLOR1,
+	COLOR2,
+	COLOR3,
+	COLOR4,
+
+	TEXTURE0,
+	TEXTURE1,
+	TEXTURE2,
+	TEXTURE3,
+	TEXTURE4,
+
+	CUSTOM0,
+	CUSTOM1,
+	CUSTOM2,
+	CUSTOM3,
+	CUSTOM4,
+	CUSTOM5,
+	CUSTOM6,
+	CUSTOM7,
+	CUSTOM8,
+	CUSTOM9,
+
+	SIZE_OF_ENUM
+}
+
 class Program
 {
 public:
@@ -11,7 +63,17 @@ public:
 	{
 		program = glCreateProgram();
 		Engine.GLCheck("Failed to create program.");
+		for (int i = 0; i < ProgramLocations.SIZE_OF_ENUM; ++i)
+			locations[i] = -1;
 	}
+
+	this(Shader vert, Shader frag)
+	{
+		this();
+		AttachShader(vert);
+		AttachShader(frag);
+	}
+
 	~this()
 	{
 		glDeleteProgram(program);
@@ -87,6 +149,16 @@ public:
 			throw new Exception("OpenGL: " ~ log);
 		}
 	}
+	
+	void MapAttribute(uint id, string name)
+	{
+		locations[id] = GetAttribLocation(name);
+	}
+
+	void MapUniform(uint id, string name)
+	{
+		locations[id] = GetUniformLocation(name);
+	}
 
 	GLint GetUniformLocation(string name)
 	{
@@ -95,67 +167,80 @@ public:
 		return loc;
 	}
 
-	void Uniform1(GLint location, float value0)
+	void Uniform1f(GLint location, float value0)
 	{
 		glUniform1f(location, value0);
 		Engine.GLCheck("glUniform1f failed!");
 	}
 
-	void Uniform2(GLint location, float value0, float value1)
+	void Uniform2f(GLint location, float value0, float value1)
 	{
 		glUniform2f(location, value0, value1);
 		Engine.GLCheck("glUniform2f failed!");
 	}
 
-	void Uniform3(GLint location, float value0, float value1, float value2)
+	void Uniform3f(GLint location, float value0, float value1, float value2)
 	{
 		glUniform3f(location, value0, value1, value2);
 		Engine.GLCheck("glUniform3f failed!");
 	}
 
-	void Uniform4(GLint location, float value0, float value1, float value2, float value3)
+	void Uniform4f(GLint location, float value0, float value1, float value2, float value3)
 	{
 		glUniform4f(location, value0, value1, value2, value3);
 		Engine.GLCheck("glUniform4f failed!");
 	}
 
-	void UniformMatrix2x3(T)(GLint location, bool transpose, Matrix2x3f m)
+	void Uniform1i(GLint location, GLint value0)
 	{
-		glUniformMatrix2x3fv(location, 1, transpose, cast(float*)m.Raw()); 
-		Engine.GLCheck("glUniformMatrix2x3 failed!");
+		glUniform1i(location, value0);
+		Engine.GLCheck("glUniform1i failed!");
 	}
 
-	void UniformMatrix3x2(GLint location, bool transpose, Matrix3x2f m)
+	void Uniform2i(GLint location, GLint value0, GLint value1)
 	{
-		glUniformMatrix3x2fv(location, 1, transpose, cast(float*)m.Raw()); 
-		Engine.GLCheck("glUniformMatrix3x2 failed!");
+		glUniform2i(location, value0, value1);
+		Engine.GLCheck("glUniform2i failed!");
 	}
 
-	void UniformMatrix2x4(T)(GLint location, bool transpose, Matrix2x4f m)
+	void Uniform3i(GLint location, GLint value0, GLint value1, GLint value2)
 	{
-		glUniformMatrix2x4fv(location, 1, transpose, cast(float*)m.Raw()); 
-		Engine.GLCheck("glUniformMatrix2x4 failed!");
+		glUniform3i(location, value0, value1, value2);
+		Engine.GLCheck("glUniform3i failed!");
 	}
 
-	void UniformMatrix3x4(T)(GLint location, bool transpose, Matrix3x4f m)
+	void Uniform4i(GLint location, GLint value0, GLint value1, GLint value2, GLint value3)
 	{
-		glUniformMatrix3x4fv(location, 1, transpose, cast(float*)m.Raw()); 
-		Engine.GLCheck("glUniformMatrix3x4 failed!");
+		glUniform4i(location, value0, value1, value2, value3);
+		Engine.GLCheck("glUniform4i failed!");
 	}
 
-	void UniformMatrix4x3(T)(GLint location, bool transpose, Matrix4x3f m)
+	void UniformMatrixf(GLint location, bool transpose, Matrix4x4f m)
 	{
-		glUniformMatrix4x3fv(location, 1, transpose, cast(float*)m.Raw()); 
-		Engine.GLCheck("glUniformMatrix4x3 failed!");
+		glUniformMatrix4fv(location, 1, transpose, cast(const(float)*)m.Raw()); 
+		Engine.GLCheck("glUniformMatrix4fv failed!");
 	}
 
-	void UniformMatrix4x4(T)(GLint location, bool transpose, Matrix4x4f m)
+	void UniformMatrixd(GLint location, bool transpose, Matrix4x4d m)
 	{
-		glUniformMatrix4x4fv(location, 1, transpose, cast(float*)m.Raw()); 
-		Engine.GLCheck("glUniformMatrix4x3 failed!");
+		glUniformMatrix4dv(location, 1, transpose, cast(double*)m.Raw()); 
+		Engine.GLCheck("glUniformMatrix4iv failed!");
+	}
+
+	void BindFragDataLocation(GLuint number, string name)
+	{
+		glBindFragDataLocation(program, number, cast(const(char)*)toStringz(name));
+		Engine.GLCheck("glBindFragDataLocation failed!");
+	}
+
+	GLint GetAttribLocation(string name)
+	{
+		return glGetAttribLocation(program, cast(const(char)*)toStringz(name));
 	}
 
 	@property GLuint ID() { return program; }
+	@property GLint Location(uint id) { return locations[id]; }
 private:
 	GLuint program;
+	GLint[ProgramLocations.SIZE_OF_ENUM] locations;
 }

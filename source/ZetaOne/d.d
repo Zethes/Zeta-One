@@ -12,10 +12,15 @@ import derelict.devil.ilu;
 public import ZetaOne.Game.game;
 public import ZetaOne.Game.gameSettings;
 public import ZetaOne.Game.frameCounter;
+public import ZetaOne.Graphics.color;
+public import ZetaOne.Graphics.graphicsManager;
+public import ZetaOne.Graphics.builtInShaders;
+public import ZetaOne.Graphics.renderer2D;
 public import ZetaOne.Graphics.shader;
 public import ZetaOne.Graphics.program;
 public import ZetaOne.Graphics.texture;
 public import ZetaOne.Graphics.image;
+public import m3d.m3d;
 
 class Engine 
 {
@@ -45,6 +50,7 @@ public:
 		DerelictGLFW3.load();
 		DerelictIL.load();
 		DerelictILU.load();
+		ilInit();
 
 		if (!glfwInit()) {
 			Log("Failed to initialize GLFW.");
@@ -84,9 +90,10 @@ public:
 	/// Throws an exception of there is an OpenGL error.
 	static void GLCheck(string msg)
 	{
-		if (glGetError() != GL_NO_ERROR)
+		uint err = glGetError();
+		if (err != GL_NO_ERROR)
 		{
-			Engine.Log("OpenGL: " ~ msg);
+			Engine.Log("OpenGL: " ~ msg, "  Code: ", err);
 			throw new Exception("OpenGL: " ~ msg);
 		}
 	}
@@ -94,10 +101,11 @@ public:
 	/// Throws an exception of there is an DevIL error.
 	static void ILCheck(string msg)
 	{
-		if (ilGetError() != IL_NO_ERROR)
+		uint err = ilGetError();
+		if (err != IL_NO_ERROR)
 		{
 			Engine.Log("DevIL: " ~ msg);
-			throw new Exception("DevIL: " ~ msg);
+			throw new Exception("DevIL: " ~ cast(string)fromStringz(iluErrorString(err)));
 		}
 	}
 private:

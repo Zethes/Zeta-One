@@ -9,6 +9,7 @@ class Image
 public:
 	this(string file)
 	{
+		Engine.Log("Loading texture '", file, "'.");
 		ilGenImages(1, &image);
 		Engine.ILCheck("Failed to generate image.");
 		Bind();
@@ -48,6 +49,7 @@ public:
 	@property uint Height() { return cast(uint)ilGetInteger(IL_IMAGE_HEIGHT); }
 	@property uint BPP() { return cast(uint)ilGetInteger(IL_IMAGE_BPP); }
 	@property uint Format() { return cast(uint)ilGetInteger(IL_IMAGE_FORMAT); }
+	@property uint Type() { return cast(uint)ilGetInteger(IL_IMAGE_TYPE); }
 	@property ubyte* Data() { return cast(ubyte*)ilGetData(); }	
 private:
 	ILuint image;
