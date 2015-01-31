@@ -1,0 +1,11 @@
+.dub
+docs.json
+__dummy.html
+*.o
+*.obj
+Log.txt
+*.a
+rendertest
+dub.selections.json
+*.swp
+.fuse*
