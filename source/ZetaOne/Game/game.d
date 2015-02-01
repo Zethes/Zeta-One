@@ -71,7 +71,7 @@ private:
 		mainFrameBuffer.Bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
-		Graphics.GetRenderer2D.RenderTexture(Transformf.Identity, watch);
+		Graphics.GetRenderer2D.RenderTexture(mat4.identity, watch);
 		mainFrameBuffer.Unbind();
 
 		// Render the post processing effects in order.
@@ -87,7 +87,7 @@ private:
 		// Render the final framebuffer to the screen.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
-		Graphics.GetRenderer2D.RenderTexture(Transformf.Identity, lastTexture);
+		Graphics.GetRenderer2D.RenderTexture(mat4.identity, lastTexture);
 	}
 
 	void Run()

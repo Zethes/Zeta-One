@@ -30,7 +30,7 @@ public:
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(GetProgram);
-		Graphics.GetRenderer2D.RenderTexture(Transformf.Identity, texture);
+		Graphics.GetRenderer2D.RenderTexture(mat4.identity, texture);
 	}
 
 	

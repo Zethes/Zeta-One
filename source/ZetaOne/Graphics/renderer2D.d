@@ -2,7 +2,6 @@ module ZetaOne.Graphics.renderer2D;
 import derelict.opengl3.gl3;
 import std.string;
 import ZetaOne.d;
-import m3d.m3d;
 
 class Renderer2D
 {
@@ -59,7 +58,7 @@ public:
 		this.program = program;
 	}
 
-	void RenderTexture(Transformf transform, Texture texture)
+	void RenderTexture(mat4 transform, Texture texture)
 	{
 		glBindVertexArray(vao);
 		Engine.GLCheck("Failed to bind vertex array.");
@@ -72,7 +71,7 @@ public:
 
 		program.Uniform1i(program.Location(ProgramLocations.TEXTURE0), 0);
 		if (program.Location(ProgramLocations.MATRIX0) >= 0)
-			program.UniformMatrixf(program.Location(ProgramLocations.MATRIX0), false, transform.GetMatrix().Transpose());
+			program.UniformMatrixf(program.Location(ProgramLocations.MATRIX0), true, transform);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 

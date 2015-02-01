@@ -1,6 +1,5 @@
 module ZetaOne.Graphics.program;
 import derelict.opengl3.gl3;
-import m3d.m3d;
 import std.string;
 import ZetaOne.d;
 
@@ -215,15 +214,15 @@ public:
 		Engine.GLCheck("glUniform4i failed!");
 	}
 
-	void UniformMatrixf(GLint location, bool transpose, Matrix4x4f m)
+	void UniformMatrixf(GLint location, bool transpose, mat4 m)
 	{
-		glUniformMatrix4fv(location, 1, transpose, cast(const(float)*)m.Raw()); 
+		glUniformMatrix4fv(location, 1, transpose, m.value_ptr); 
 		Engine.GLCheck("glUniformMatrix4fv failed!");
 	}
 
-	void UniformMatrixd(GLint location, bool transpose, Matrix4x4d m)
+	void UniformMatrixd(GLint location, bool transpose, Matrix!(double, 4, 4) m)
 	{
-		glUniformMatrix4dv(location, 1, transpose, cast(double*)m.Raw()); 
+		glUniformMatrix4dv(location, 1, transpose, m.value_ptr); 
 		Engine.GLCheck("glUniformMatrix4iv failed!");
 	}
 

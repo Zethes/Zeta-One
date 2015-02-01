@@ -23,7 +23,12 @@ public import ZetaOne.Graphics.image;
 public import ZetaOne.Graphics.frameBuffer;
 public import ZetaOne.Graphics.renderBuffer;
 public import ZetaOne.Graphics.postProcessingEffect;
-public import m3d.m3d;
+public import gl3n.aabb;
+public import gl3n.frustum;
+public import gl3n.interpolate;
+public import gl3n.linalg;
+public import gl3n.math;
+public import gl3n.util;
 
 class Engine 
 {
