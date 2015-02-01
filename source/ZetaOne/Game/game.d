@@ -92,6 +92,7 @@ private:
 
 	void Run()
 	{
+		Engine.Log("-----------------------------------------------");
 		Engine.Log("Creating Engine Modules");
 		Engine.Log("-----------------------------------------------");
 		

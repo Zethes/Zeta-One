@@ -55,6 +55,118 @@ class GrayscaleEffect : PostProcessingEffect
 public:
 	this(GameSettings settings, GraphicsManager graphics)
 	{
-		super(BuiltInShaders.Grayscale.program, settings, graphics);
+		string vertexSource = "
+			#version 150
+			in vec2 position;
+			in vec2 texcoord;
+			out vec2 Texcoord;
+			void main() {
+				Texcoord = texcoord;
+				gl_Position = vec4(position, 0.0, 1.0);
+			}
+		";
+
+		string fragmentSource = "
+			#version 150
+			in vec2 Texcoord;
+			out vec4 outColor;
+			uniform sampler2D tex;
+			void main() {
+				outColor = texture(tex, Texcoord);
+				float avg = 0.2126 * outColor.r + 0.7152 * outColor.g + 0.0722 * outColor.b;
+				outColor = vec4(avg, avg, avg, 1.0);
+			}
+		";
+
+		Shader vertex;
+		Shader fragment;
+		Program program;
+
+		Engine.Log("Compiling Grayscale shader.");
+		vertex = new Shader(GL_VERTEX_SHADER, vertexSource);
+		fragment = new Shader(GL_FRAGMENT_SHADER, fragmentSource);
+		vertex.Compile();
+		fragment.Compile();
+		program = new Program(vertex, fragment);
+		program.BindFragDataLocation(0, "outColor");
+		program.Link();
+		program.Validate();
+		program.MapAttribute(ProgramLocations.POSITION0, "position");
+		program.MapAttribute(ProgramLocations.TEXCOORD0, "texcoord");
+		program.MapUniform(ProgramLocations.TEXTURE0, "tex");
+	
+		super(program, settings, graphics);
 	}
+}
+
+class BloomEffect : PostProcessingEffect
+{
+public:
+	this(GameSettings settings, GraphicsManager graphics)
+	{
+		string vertexSource = "
+			#version 150
+			in vec2 position;
+			in vec2 texcoord;
+			out vec2 Texcoord;
+			void main() {
+				Texcoord = texcoord;
+				gl_Position = vec4(position, 0.0, 1.0);
+			}
+		";
+
+		string fragmentSource = "
+			#version 150
+			in vec2 Texcoord;
+			out vec4 outColor;
+			uniform sampler2D tex;
+			uniform int samples = 5;
+			
+			void main() {
+				vec4 color = texture(tex, Texcoord);
+
+				int i,j;
+				vec4 sum = vec4(0);
+				for (i = -2; i <= 2; i++) {
+					for (j = -2; j <= 2; j++) {
+						vec2 offset = vec2(i, j) * 0.005;
+						sum += texture(tex, Texcoord + offset);
+					}
+				}
+				outColor = (sum / (samples * samples)) + color;
+			}
+		";
+
+		Shader vertex;
+		Shader fragment;
+		Program program;
+
+		Engine.Log("Compiling Bloom shader.");
+		vertex = new Shader(GL_VERTEX_SHADER, vertexSource);
+		fragment = new Shader(GL_FRAGMENT_SHADER, fragmentSource);
+		vertex.Compile();
+		fragment.Compile();
+		program = new Program(vertex, fragment);
+		program.BindFragDataLocation(0, "outColor");
+		program.Link();
+		program.Validate();
+		program.MapAttribute(ProgramLocations.POSITION0, "position");
+		program.MapAttribute(ProgramLocations.TEXCOORD0, "texcoord");
+		program.MapUniform(ProgramLocations.TEXTURE0, "tex");
+		program.MapUniform(ProgramLocations.CUSTOM0, "samples");
+	
+		super(program, settings, graphics);
+		Samples = 5;
+	}	
+
+	@property int Samples() { return samples; }
+	@property void Samples(int s) 
+	{
+		samples = s;
+		program.Bind();
+		program.Uniform1i(program.Location(ProgramLocations.CUSTOM0), samples);
+		program.Unbind();
+	}
+private:
+	int samples;
 }

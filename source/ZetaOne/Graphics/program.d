@@ -239,7 +239,7 @@ public:
 	}
 
 	@property GLuint ID() { return program; }
-	@property GLint Location(uint id) { return locations[id]; }
+	GLint Location(uint id) { return locations[id]; }
 private:
 	GLuint program;
 	GLint[ProgramLocations.SIZE_OF_ENUM] locations;
