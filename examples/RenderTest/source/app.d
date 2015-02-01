@@ -12,6 +12,7 @@ class TestGame : Game
 	{
 		super.Initialize();
 		Graphics.ClearColor(new Color(0.392, 0.584, 0.929));
+		Graphics.RegisterPostProcessingEffect(new GrayscaleEffect(Settings, Graphics));
 	}
 
 	override void Update()

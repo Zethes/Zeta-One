@@ -15,7 +15,6 @@ public:
 		BuiltInShaders.BuildShaders();
 		Engine.Log("  Creating 2D renderer.");
 		renderer2D = new Renderer2D(settings);
-		Engine.Log("  Done");
 
 		// OpenGL settings:
 		glEnable(GL_TEXTURE_2D);
@@ -27,8 +26,15 @@ public:
 		glClearColor(c.R, c.G, c.B, c.A);
 	}
 
+	void RegisterPostProcessingEffect(PostProcessingEffect effect)
+	{
+		postProcessingEffects ~= effect;
+	}
+
 	@property Renderer2D GetRenderer2D() { return renderer2D; }
+	@property PostProcessingEffect[] GetPostProcessingEffects() { return postProcessingEffects; }
 private:
 	GameSettings settings;
 	Renderer2D renderer2D;
+	PostProcessingEffect[] postProcessingEffects;
 }

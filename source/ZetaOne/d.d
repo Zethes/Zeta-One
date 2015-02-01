@@ -20,6 +20,9 @@ public import ZetaOne.Graphics.shader;
 public import ZetaOne.Graphics.program;
 public import ZetaOne.Graphics.texture;
 public import ZetaOne.Graphics.image;
+public import ZetaOne.Graphics.frameBuffer;
+public import ZetaOne.Graphics.renderBuffer;
+public import ZetaOne.Graphics.postProcessingEffect;
 public import m3d.m3d;
 
 class Engine 
@@ -70,7 +73,7 @@ public:
 	{
 		try {
 			auto date = Clock.currTime;
-			string timestamp = format("%d-%d-%d %d:%d:%d", date.year, date.month, date.day, date.hour, date.minute, date.second);
+			string timestamp = format("%02d:%02d:%02d", date.hour, date.minute, date.second);
 			append(logFile, timestamp ~ ": ");
 			write(timestamp ~ ": ");
 

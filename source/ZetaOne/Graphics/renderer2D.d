@@ -69,9 +69,13 @@ public:
 		program.Bind();
 		texture.Active(GL_TEXTURE0);
 		texture.Bind();
-		program.Uniform1i(program.Location(ProgramLocations.TEXTURE0), texture.ID);
-		program.UniformMatrixf(program.Location(ProgramLocations.MATRIX0), false, transform.GetMatrix().Transpose());
+
+		program.Uniform1i(program.Location(ProgramLocations.TEXTURE0), 0);
+		if (program.Location(ProgramLocations.MATRIX0) >= 0)
+			program.UniformMatrixf(program.Location(ProgramLocations.MATRIX0), false, transform.GetMatrix().Transpose());
+
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+
 		texture.Unbind();
 		program.Unbind();
 

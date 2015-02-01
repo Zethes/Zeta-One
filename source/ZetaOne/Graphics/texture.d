@@ -14,19 +14,42 @@ public:
 		Engine.GLCheck("Failed to generate texture.");
 		this.type = type;
 
+		Active(GL_TEXTURE0);
+		Bind();
 		SetTextureWrapS(GL_CLAMP_TO_EDGE);
 		SetTextureWrapT(GL_CLAMP_TO_EDGE);
 		SetMinFilter(GL_LINEAR);
 		SetMagFilter(GL_LINEAR);
+		Unbind();
+		Engine.GLCheck("Failed to set texture wrapping and filters.");
 	}
 
-	this(Image image)
+	this(GLenum type, Image image)
 	{
-		this(GL_TEXTURE_2D);
+		this(type);
 		image.Bind();
-		glTexImage2D(GL_TEXTURE_2D, 0, image.BPP, image.Width, image.Height, 0, image.Format, image.Type, cast(GLvoid*)image.Data);
+
+		Bind();
+		glTexImage2D(type, 0, image.BPP, image.Width, image.Height, 0, image.Format, image.Type, cast(GLvoid*)image.Data);
 		Engine.GLCheck("Failed to set texture.");
+		Unbind();
+
 		image.Unbind();
+	}
+
+	this(GLenum type, FrameBuffer frameBuffer, GLenum attachment, int width, int height)
+	{
+		this(type);
+		frameBuffer.Bind();
+
+		Bind();
+		glTexImage2D(type, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cast(GLvoid*)0);
+		Engine.GLCheck("Failed to set texture.");
+		Unbind();
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, type, texture, 0);
+		Engine.GLCheck("Failed to attach frame buffer.");
+		frameBuffer.Unbind();
 	}
 
 	~this()

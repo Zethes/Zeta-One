@@ -27,6 +27,7 @@ public:
 		gameRunning = false;
 	}
 
+	@property GameSettings Settings() { return settings; }
 	@property FrameCounter FrameRate() { return frameCounter; }
 	@property GraphicsManager Graphics() { return graphicsManager; }
 protected:
@@ -34,8 +35,24 @@ protected:
 
 	void Initialize()
 	{
+		Engine.Log("Renderer: ", fromStringz(glGetString(GL_RENDERER)));
+		Engine.Log("OpenGL Version: ", fromStringz(glGetString(GL_VERSION)));
+		
 		Image img = new Image("watch.png");
-		watch = new Texture(img);
+		watch = new Texture(GL_TEXTURE_2D, img);
+		
+		mainFrameBuffer = new FrameBuffer();
+		mainFrameBuffer.Bind();
+
+		mainRenderBuffer = new RenderBuffer();
+		mainRenderBuffer.Bind();
+		mainRenderBuffer.Storage(GL_DEPTH24_STENCIL8, settings.ScreenWidth, settings.ScreenHeight);
+		mainRenderBuffer.Unbind();
+			
+		mainFrameBuffer.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, mainRenderBuffer);
+		mainFrameBuffer.Unbind();
+
+		mainFrameBufferTexture = new Texture(GL_TEXTURE_2D, mainFrameBuffer, GL_COLOR_ATTACHMENT0, settings.ScreenWidth, settings.ScreenHeight);
 	}
 
 	void Deinitialize()
@@ -50,10 +67,27 @@ protected:
 private:
 	void Render()
 	{
-		// Render the final framebuffer to the screen.
+		//Render the scene:
+		mainFrameBuffer.Bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
 		Graphics.GetRenderer2D.RenderTexture(Transformf.Identity, watch);
+		mainFrameBuffer.Unbind();
+
+		// Render the post processing effects in order.
+		Texture lastTexture = mainFrameBufferTexture;
+		foreach (effect; Graphics.GetPostProcessingEffects())
+		{
+			effect.GetFrameBuffer.Bind();
+			effect.Render(lastTexture);
+			effect.GetFrameBuffer.Unbind();
+			lastTexture = effect.GetTexture;
+		}
+
+		// Render the final framebuffer to the screen.
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
+		Graphics.GetRenderer2D.RenderTexture(Transformf.Identity, lastTexture);
 	}
 
 	void Run()
@@ -86,11 +120,18 @@ private:
 		// Initialize the graphics manager after setting the context.
 		graphicsManager = new GraphicsManager(settings);
 
+		// Run the game's intialize method
+		Engine.Log("-----------------------------------------------");
+		Engine.Log("Initializing the game.");
+		Engine.Log("-----------------------------------------------");
+		Initialize();
+
 		// Enter the main game loop. Running until window is closed or gameRunning is set to false. 
 		gameRunning = true;
-		Initialize();
 		frameCounter = new FrameCounter();
+		Engine.Log("-----------------------------------------------");
 		Engine.Log("Entering main game loop.");
+		Engine.Log("-----------------------------------------------");
 		while (!glfwWindowShouldClose(window) && gameRunning)
 		{
 			glfwPollEvents();
@@ -110,4 +151,7 @@ private:
 	bool gameRunning;
 	FrameCounter frameCounter;
 	GraphicsManager graphicsManager;
+	FrameBuffer mainFrameBuffer;
+	RenderBuffer mainRenderBuffer;
+	Texture mainFrameBufferTexture;
 }
