@@ -19,6 +19,7 @@ public:
 		// OpenGL settings:
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_DEPTH_TEST);
+		glViewport(0, 0, cast(GLsizei)settings.ScreenWidth, cast(GLsizei)settings.ScreenHeight);
 	}
 
 	void ClearColor(Color c)
@@ -28,7 +29,24 @@ public:
 
 	void RegisterPostProcessingEffect(PostProcessingEffect effect)
 	{
+		foreach (effect2; postProcessingEffects)
+		{
+			if (effect.GetName == effect2.GetName)
+				throw new Exception("Unable to register post processing effect, name is taken.");
+		}
+
 		postProcessingEffects ~= effect;
+	}
+
+	PostProcessingEffect GetPostProcessingEffect(string name)
+	{
+		foreach (ref effect; postProcessingEffects)
+		{
+			if (name == effect.GetName)
+				return effect;
+		}
+
+		throw new Exception("Unknown post processing effect '" ~ name ~ "'.");
 	}
 
 	@property Renderer2D GetRenderer2D() { return renderer2D; }

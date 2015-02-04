@@ -58,7 +58,7 @@ public:
 		this.program = program;
 	}
 
-	void RenderTexture(mat4 transform, Texture texture)
+	void RenderTexture(vec2 pos, vec2 size, Texture texture)
 	{
 		glBindVertexArray(vao);
 		Engine.GLCheck("Failed to bind vertex array.");
@@ -69,9 +69,14 @@ public:
 		texture.Active(GL_TEXTURE0);
 		texture.Bind();
 
-		program.Uniform1i(program.Location(ProgramLocations.TEXTURE0), 0);
+		if (program.Location(ProgramLocations.TEXTURE0) >= 0)
+			program.Uniform1i(program.Location(ProgramLocations.TEXTURE0), 0);
 		if (program.Location(ProgramLocations.MATRIX0) >= 0)
-			program.UniformMatrixf(program.Location(ProgramLocations.MATRIX0), true, transform);
+		{
+			mat4 trans = mat4.identity.translate(-1.0f + 2.0f * (pos.x / settings.ScreenWidth), 1.0f - 2.0f * (pos.y / settings.ScreenHeight), 0.0f) * 
+				mat4.identity.scale(size.x / settings.ScreenWidth, size.y / settings.ScreenHeight, 1.0f);
+			program.UniformMatrixf(program.Location(ProgramLocations.MATRIX0), true, trans);
+		}
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 

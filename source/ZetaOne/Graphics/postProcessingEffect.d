@@ -6,10 +6,10 @@ import ZetaOne.d;
 class PostProcessingEffect
 {
 public:
-	this(Program program, GameSettings settings, GraphicsManager graphics)
+	this(string name, GameSettings settings, GraphicsManager graphics)
 	{
+		this.name = name;
 		this.settings = settings;
-		this.program = program;
 		this.graphics = graphics;
 
 		this.frameBuffer = new FrameBuffer();
@@ -24,16 +24,32 @@ public:
 		this.frameBuffer.Unbind();
 
 		this.textureBuffer = new Texture(GL_TEXTURE_2D, this.frameBuffer, GL_COLOR_ATTACHMENT0, settings.ScreenWidth, settings.ScreenHeight);
+		Compile();
+	}
+
+	void Compile()
+	{
+		throw new Exception("Unimplemented: PostProcessingEffect.Compile()");
+	}
+
+	void Bind()
+	{
+		frameBuffer.Bind();
+	}
+
+	void Unbind()
+	{
+		frameBuffer.Unbind();
 	}
 
 	void Render(Texture texture)
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(GetProgram);
-		Graphics.GetRenderer2D.RenderTexture(mat4.identity, texture);
+		Graphics.GetRenderer2D.RenderTexture(vec2(settings.ScreenWidth/2.0f,settings.ScreenHeight/2.0f), vec2(settings.ScreenWidth, -settings.ScreenHeight), texture);
 	}
 
-	
+	@property string GetName() { return name; }
 	@property Texture GetTexture() { return textureBuffer; }
 	@property Program GetProgram() { return program; }
 	@property GraphicsManager Graphics() { return graphics; }
@@ -41,8 +57,10 @@ public:
 	@property RenderBuffer GetRenderBuffer() { return renderBuffer; }
 protected:
 	@property GameSettings GetSettings() { return settings; }
-private:
+
 	Program program;
+private:
+	string name;
 	GameSettings settings;
 	FrameBuffer frameBuffer;
 	RenderBuffer renderBuffer;
@@ -53,13 +71,19 @@ private:
 class GrayscaleEffect : PostProcessingEffect
 {
 public:
-	this(GameSettings settings, GraphicsManager graphics)
+	this(string name, GameSettings settings, GraphicsManager graphics)
+	{
+		super(name, settings, graphics);
+	}
+
+	override void Compile()
 	{
 		string vertexSource = "
 			#version 150
 			in vec2 position;
 			in vec2 texcoord;
 			out vec2 Texcoord;
+			uniform mat4 transform;
 			void main() {
 				Texcoord = texcoord;
 				gl_Position = vec4(position, 0.0, 1.0);
@@ -80,9 +104,8 @@ public:
 
 		Shader vertex;
 		Shader fragment;
-		Program program;
 
-		Engine.Log("Compiling Grayscale shader.");
+		Engine.Log("Compiling ", name, " shader.");
 		vertex = new Shader(GL_VERTEX_SHADER, vertexSource);
 		fragment = new Shader(GL_FRAGMENT_SHADER, fragmentSource);
 		vertex.Compile();
@@ -94,15 +117,19 @@ public:
 		program.MapAttribute(ProgramLocations.POSITION0, "position");
 		program.MapAttribute(ProgramLocations.TEXCOORD0, "texcoord");
 		program.MapUniform(ProgramLocations.TEXTURE0, "tex");
-	
-		super(program, settings, graphics);
 	}
 }
 
 class BloomEffect : PostProcessingEffect
 {
 public:
-	this(GameSettings settings, GraphicsManager graphics)
+	this(string name, GameSettings settings, GraphicsManager graphics)
+	{
+		super(name, settings, graphics);
+		Samples = 5;
+	}	
+
+	override void Compile()
 	{
 		string vertexSource = "
 			#version 150
@@ -139,9 +166,8 @@ public:
 
 		Shader vertex;
 		Shader fragment;
-		Program program;
 
-		Engine.Log("Compiling Bloom shader.");
+		Engine.Log("Compiling ", name, " shader.");
 		vertex = new Shader(GL_VERTEX_SHADER, vertexSource);
 		fragment = new Shader(GL_FRAGMENT_SHADER, fragmentSource);
 		vertex.Compile();
@@ -154,10 +180,7 @@ public:
 		program.MapAttribute(ProgramLocations.TEXCOORD0, "texcoord");
 		program.MapUniform(ProgramLocations.TEXTURE0, "tex");
 		program.MapUniform(ProgramLocations.CUSTOM0, "samples");
-	
-		super(program, settings, graphics);
-		Samples = 5;
-	}	
+	}
 
 	@property int Samples() { return samples; }
 	@property void Samples(int s) 

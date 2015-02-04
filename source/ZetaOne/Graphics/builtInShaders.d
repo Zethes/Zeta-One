@@ -15,7 +15,7 @@ class BuiltInShaders
 			uniform mat4 transform;
 			void main() {
 				Texcoord = texcoord;
-				gl_Position = vec4(position, 0.0, 1.0);
+				gl_Position = transform * vec4(position, 0.0, 1.0);
 			}
 		";
 		static string fragmentSource = "
@@ -45,7 +45,7 @@ class BuiltInShaders
 		Screen.program.Validate();
 		Screen.program.MapAttribute(ProgramLocations.POSITION0, "position");
 		Screen.program.MapAttribute(ProgramLocations.TEXCOORD0, "texcoord");
-		Screen.program.MapAttribute(ProgramLocations.MATRIX0, "transform");
 		Screen.program.MapUniform(ProgramLocations.TEXTURE0, "tex");
+		Screen.program.MapUniform(ProgramLocations.MATRIX0, "transform");
 	}
 }

@@ -37,10 +37,21 @@ protected:
 	{
 		Engine.Log("Renderer: ", fromStringz(glGetString(GL_RENDERER)));
 		Engine.Log("OpenGL Version: ", fromStringz(glGetString(GL_VERSION)));
+
+		// Make sure system is running atleast 3.2 (GLSL v150)
+		GLint versionMajor, versionMinor;
+		glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
+		glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
+		if (versionMajor < 3)
+			throw new Exception("Invalid version!  Requires OpenGL 3.2+");
+		if (versionMajor == 3 && versionMinor < 2)
+			throw new Exception("Invalid version!  Requires OpenGL 3.2+");
 		
+		// Test shit
 		Image img = new Image("watch.png");
 		watch = new Texture(GL_TEXTURE_2D, img);
 		
+		// Create main frame buffer.
 		mainFrameBuffer = new FrameBuffer();
 		mainFrameBuffer.Bind();
 
@@ -71,23 +82,24 @@ private:
 		mainFrameBuffer.Bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
-		Graphics.GetRenderer2D.RenderTexture(mat4.identity, watch);
+		Graphics.GetRenderer2D.RenderTexture(vec2(settings.ScreenWidth/2.0f,settings.ScreenHeight/2.0f), vec2(settings.ScreenWidth, settings.ScreenHeight), watch);
 		mainFrameBuffer.Unbind();
 
 		// Render the post processing effects in order.
 		Texture lastTexture = mainFrameBufferTexture;
 		foreach (effect; Graphics.GetPostProcessingEffects())
 		{
-			effect.GetFrameBuffer.Bind();
+			effect.Bind();
 			effect.Render(lastTexture);
-			effect.GetFrameBuffer.Unbind();
+			effect.Unbind();
 			lastTexture = effect.GetTexture;
 		}
-
+		
 		// Render the final framebuffer to the screen.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
-		Graphics.GetRenderer2D.RenderTexture(mat4.identity, lastTexture);
+		Graphics.GetRenderer2D.RenderTexture(vec2(settings.ScreenWidth/2.0f,settings.ScreenHeight/2.0f), vec2(settings.ScreenWidth, -settings.ScreenHeight), lastTexture);
+		Graphics.GetRenderer2D.RenderTexture(vec2(100,75), vec2(200, 150), watch);
 	}
 
 	void Run()
@@ -97,6 +109,7 @@ private:
 		Engine.Log("-----------------------------------------------");
 		
 		Engine.Log("Preparing display");
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 		if (!settings.Fullscreen)
 			window = glfwCreateWindow(settings.ScreenWidth, settings.ScreenHeight, toStringz(settings.WindowTitle), cast(GLFWmonitor*)0, cast(GLFWwindow*)0);
 		else 

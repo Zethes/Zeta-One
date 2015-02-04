@@ -12,11 +12,10 @@ class TestGame : Game
 	{
 		super.Initialize();
 		Graphics.ClearColor(new Color(0.392, 0.584, 0.929));
-		BloomEffect bloom = new BloomEffect(Settings, Graphics);
-		bloom.Samples = 8;
 
-		Graphics.RegisterPostProcessingEffect(bloom);
-//		Graphics.RegisterPostProcessingEffect(new GrayscaleEffect(Settings, Graphics));
+		Graphics.RegisterPostProcessingEffect(new BloomEffect("pass 1", Settings, Graphics));
+		Graphics.RegisterPostProcessingEffect(new GrayscaleEffect("pass 2", Settings, Graphics));
+		(cast(BloomEffect)Graphics.GetPostProcessingEffect("pass 1")).Samples = 8;
 	}
 
 	override void Update()
