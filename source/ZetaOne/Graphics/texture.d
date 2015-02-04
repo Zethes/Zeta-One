@@ -30,8 +30,8 @@ public:
 		image.Bind();
 
 		Bind();
-		glTexImage2D(type, 0, image.BPP, image.Width, image.Height, 0, image.Format, image.Type, cast(GLvoid*)image.Data);
-		Engine.GLCheck("Failed to set texture.");
+		glTexImage2D(type, 0, image.Format, image.Width, image.Height, 0, image.Format, image.Type, cast(GLvoid*)image.Data);
+		Engine.GLCheck("Failed to set texture from image.");
 		Unbind();
 
 		image.Unbind();

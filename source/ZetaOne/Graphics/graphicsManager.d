@@ -17,9 +17,10 @@ public:
 		renderer2D = new Renderer2D(settings);
 
 		// OpenGL settings:
-		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_DEPTH_TEST);
+		Engine.GLCheck("Failed to enable settings.");
 		glViewport(0, 0, cast(GLsizei)settings.ScreenWidth, cast(GLsizei)settings.ScreenHeight);
+		Engine.GLCheck("Failed to set viewport.");
 	}
 
 	void ClearColor(Color c)

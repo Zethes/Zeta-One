@@ -42,10 +42,11 @@ protected:
 		GLint versionMajor, versionMinor;
 		glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
 		glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
+		Engine.GLCheck("Failed to get OpenGL version.");
 		if (versionMajor < 3)
-			throw new Exception("Invalid version!  Requires OpenGL 3.2+");
-		if (versionMajor == 3 && versionMinor < 2)
-			throw new Exception("Invalid version!  Requires OpenGL 3.2+");
+			throw new Exception("Invalid version!  Requires OpenGL 3.3+");
+		if (versionMajor == 3 && versionMinor < 3)
+			throw new Exception("Invalid version!  Requires OpenGL 3.3+");
 		
 		// Test shit
 		Image img = new Image("watch.png");
@@ -130,6 +131,7 @@ private:
 		glfwMakeContextCurrent(window);
 		DerelictGL3.reload();
 		glfwSwapInterval(settings.VSync ? 1 : 0);
+		Engine.GLCheck("Failed to set Vsync.");
 
 		// Initialize the graphics manager after setting the context.
 		graphicsManager = new GraphicsManager(settings);

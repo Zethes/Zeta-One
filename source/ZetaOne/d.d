@@ -67,6 +67,14 @@ public:
 			Log("Failed to initialize GLFW.");
 			return false;
 		}
+		//Force version 3.3
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		
+		GLCheck("Failed to force OpenGL version 3.3");
+
 		return true;
 	}
 
