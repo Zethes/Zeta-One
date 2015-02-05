@@ -6,23 +6,25 @@ import ZetaOne.d;
 class SceneObject
 {
 public:
-	this(string name, mat4 transform, AABB boundingBox) // and Material
+	this(string name, mat4 transform, Mesh mesh) // and Material
 	{
-		this.boundingBox = boundingBox;
 		this.name = name;
 		this.transform = transform;
+		this.mesh = mesh;
 	}
 
-	void Render()
+	void Render(Camera camera)
 	{
-		throw new Exception("Unimplemented: SceneObject.Render()");
+		if (mesh is null)
+			return;
+		mesh.Render(transform, camera);
 	}
 
 	@property string GetName() { return name; }
-	@property AABB GetBoundingBox() { return boundingBox; }
-protected:
-	AABB boundingBox;
-	mat4 transform;
+	@property mat4 GetTransform() { return transform; }
+	@property Mesh GetMesh() { return mesh; }
 private:
 	string name;
+	mat4 transform;
+	Mesh mesh;
 }

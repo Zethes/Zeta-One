@@ -24,8 +24,12 @@ public import ZetaOne.Graphics.frameBuffer;
 public import ZetaOne.Graphics.renderBuffer;
 public import ZetaOne.Graphics.postProcessingEffect;
 public import ZetaOne.Graphics.vertexBuffer;
+public import ZetaOne.Scene.material;
+public import ZetaOne.Scene.camera;
 public import ZetaOne.Scene.sceneObject;
+public import ZetaOne.Scene.mesh;
 public import ZetaOne.Scene.cube;
+public import ZetaOne.Scene.scene;
 public import gl3n.aabb;
 public import gl3n.frustum;
 public import gl3n.interpolate;
@@ -112,7 +116,10 @@ public:
 		uint err = glGetError();
 		if (err != GL_NO_ERROR)
 		{
-			Engine.Log("OpenGL: " ~ msg, "  Code: ", err);
+			Engine.Log("OpenGL Error:");
+			Engine.Log("=============");
+			Engine.Log("Error ID: ", err);
+			Engine.Log("Message: ", msg);
 			throw new Exception("OpenGL: " ~ msg);
 		}
 	}

@@ -16,6 +16,14 @@ class TestGame : Game
 		Graphics.RegisterPostProcessingEffect(new BloomEffect("pass 1", Settings, Graphics));
 		Graphics.RegisterPostProcessingEffect(new GrayscaleEffect("pass 2", Settings, Graphics));
 		(cast(BloomEffect)Graphics.GetPostProcessingEffect("pass 1")).Samples = 8;
+
+		// Initialize the scene
+		GetScene.GetCamera.LookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,1,0));
+		Material mat = new FlatMaterial("flat", Settings);
+		GetScene.AddObject(new SceneObject("cube0", mat4.identity.translate(0,0,0), new CubeMesh(mat, vec3(1,1,1))));
+		GetScene.AddObject(new SceneObject("cube1", mat4.identity.translate(3,3,3), new CubeMesh(mat, vec3(1,1,1))));
+		GetScene.AddObject(new SceneObject("cube2", mat4.identity.translate(0,6,6), new CubeMesh(mat, vec3(1,1,1))));
+		GetScene.AddObject(new SceneObject("cube3", mat4.identity.translate(-6,-6,0), new CubeMesh(mat, vec3(1,1,1))));
 	}
 
 	override void Update()

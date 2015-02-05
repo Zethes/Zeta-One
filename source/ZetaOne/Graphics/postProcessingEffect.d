@@ -79,7 +79,7 @@ public:
 	override void Compile()
 	{
 		string vertexSource = "
-			#version 150
+			#version 330 core 
 			in vec2 position;
 			in vec2 texcoord;
 			out vec2 Texcoord;
@@ -91,7 +91,7 @@ public:
 		";
 
 		string fragmentSource = "
-			#version 150
+			#version 330 core 
 			in vec2 Texcoord;
 			out vec4 outColor;
 			uniform sampler2D tex;
@@ -132,7 +132,7 @@ public:
 	override void Compile()
 	{
 		string vertexSource = "
-			#version 150
+			#version 330 core 
 			in vec2 position;
 			in vec2 texcoord;
 			out vec2 Texcoord;
@@ -143,7 +143,7 @@ public:
 		";
 
 		string fragmentSource = "
-			#version 150
+			#version 330 core 
 			in vec2 Texcoord;
 			out vec4 outColor;
 			uniform sampler2D tex;

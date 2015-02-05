@@ -30,6 +30,7 @@ public:
 	@property GameSettings Settings() { return settings; }
 	@property FrameCounter FrameRate() { return frameCounter; }
 	@property GraphicsManager Graphics() { return graphicsManager; }
+	@property Scene GetScene() { return scene; }
 protected:
 	Texture watch;
 
@@ -48,9 +49,8 @@ protected:
 		if (versionMajor == 3 && versionMinor < 3)
 			throw new Exception("Invalid version!  Requires OpenGL 3.3+");
 		
-		// Test shit
-		Image img = new Image("watch.png");
-		watch = new Texture(GL_TEXTURE_2D, img);
+		// Create scene
+		scene = new Scene(settings);
 		
 		// Create main frame buffer.
 		mainFrameBuffer = new FrameBuffer();
@@ -82,8 +82,7 @@ private:
 		//Render the scene:
 		mainFrameBuffer.Bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
-		Graphics.GetRenderer2D.RenderTexture(vec2(settings.ScreenWidth/2.0f,settings.ScreenHeight/2.0f), vec2(settings.ScreenWidth, settings.ScreenHeight), watch);
+		GetScene().Render();
 		mainFrameBuffer.Unbind();
 
 		// Render the post processing effects in order.
@@ -99,8 +98,8 @@ private:
 		// Render the final framebuffer to the screen.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Graphics.GetRenderer2D.LinkProgram(BuiltInShaders.Screen.program);
-		Graphics.GetRenderer2D.RenderTexture(vec2(settings.ScreenWidth/2.0f,settings.ScreenHeight/2.0f), vec2(settings.ScreenWidth, -settings.ScreenHeight), lastTexture);
-		Graphics.GetRenderer2D.RenderTexture(vec2(100,75), vec2(200, 150), watch);
+		Graphics.GetRenderer2D.RenderTexture(vec2(settings.ScreenWidth/2.0f,settings.ScreenHeight/2.0f), vec2(settings.ScreenWidth, 
+					(Graphics.GetPostProcessingEffects().length % 2 == 0 ? -1 : 1) * settings.ScreenHeight), lastTexture);
 	}
 
 	void Run()
@@ -170,4 +169,5 @@ private:
 	FrameBuffer mainFrameBuffer;
 	RenderBuffer mainRenderBuffer;
 	Texture mainFrameBufferTexture;
+	Scene scene;
 }

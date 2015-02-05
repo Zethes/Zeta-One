@@ -18,6 +18,8 @@ public:
 
 		// OpenGL settings:
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		Engine.GLCheck("Failed to enable settings.");
 		glViewport(0, 0, cast(GLsizei)settings.ScreenWidth, cast(GLsizei)settings.ScreenHeight);
 		Engine.GLCheck("Failed to set viewport.");

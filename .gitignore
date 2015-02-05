@@ -9,3 +9,4 @@ rendertest
 dub.selections.json
 *.swp
 .fuse*
+*.swo
